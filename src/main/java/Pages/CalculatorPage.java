@@ -60,6 +60,7 @@ public class CalculatorPage extends BasePage {
      * @param purposeName Цель кредита
      */
     public void selectPurpose(String purposeName) {
+        waitToBeClickable(purposeOptionsButton);
         scrollToElement(purposeOptionsButton);
         purposeOptionsButton.click();
 
@@ -80,8 +81,6 @@ public class CalculatorPage extends BasePage {
      * @param value Значение
      */
     public void fillFields(String fieldName, String value) {
-        waitVisibility(purposeLabel);
-
         switch (fieldName) {
             case "Цель кредита":
                 selectPurpose(value);
