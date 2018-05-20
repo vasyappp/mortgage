@@ -3,7 +3,6 @@ package Pages;
 import Steps.BaseSteps;
 import org.junit.Assert;
 import org.openqa.selenium.*;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -19,6 +18,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class BasePage {
     WebDriver driver = BaseSteps.getDriver();
+    WebDriverWait wait = new WebDriverWait(driver, 10);
 
     public BasePage() {
         PageFactory.initElements(driver, this);
@@ -57,6 +57,7 @@ public class BasePage {
             if (item.getText().equalsIgnoreCase(itemName)) {
                 scrollToElement(item);
                 item.click();
+
                 return;
             }
         }
@@ -107,10 +108,11 @@ public class BasePage {
 
         element.click();
 
-        String newWindow = (new WebDriverWait(driver, 10))
+        String newWindow = wait
                 .until((ExpectedCondition<String>) driver -> {
                             Set<String> newWindowsSet = driver.getWindowHandles();
                             newWindowsSet.removeAll(oldWindowsSet);
+
                             return newWindowsSet.size() > 0 ?
                                     newWindowsSet.iterator().next() : null;
                         }
@@ -120,38 +122,36 @@ public class BasePage {
     }
 
     /**
-     * Метод вводит указанное значение в поле, которое может изменить свое значение
+     * Метод вводит указанное значение в поле с автозаполнением
      *
      * @param field Поле для ввода данных
      * @param value Значение
      */
     public void fillChangingField(WebElement field, String value) {
-        /*
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            System.out.println("oops");
-        }
-
-        fillField(field, value);
-        */
         waitToBeClickable(field);
-        WebDriverWait wait = new WebDriverWait(driver, 10);
+
         wait.until((ExpectedCondition<Boolean>) driver -> {
             field.clear();
             field.click();
             field.sendKeys(value);
+
             String actualValue = field.getAttribute("value");
+
             if (field.getAttribute("value").contains("\u20BD"))
                 actualValue = actualValue.substring(0, actualValue.length() - 2);
             else
                 actualValue = actualValue.substring(0, actualValue.length() - 4);
+
             return actualValue.equalsIgnoreCase(value);
         });
     }
 
-        public void waitToBeClickable(WebElement element) {
-        WebDriverWait wait = new WebDriverWait(driver, 10);
+    /**
+     * Метод ожидает, когда элемент станет кликабельным
+     *
+     * @param element Элемент
+     */
+    public void waitToBeClickable(WebElement element) {
         wait.until(ExpectedConditions.elementToBeClickable(element));
     }
 }

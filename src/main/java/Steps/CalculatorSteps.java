@@ -22,18 +22,17 @@ public class CalculatorSteps {
         }
     }
 
-    @Step("в поле \"{0}\" введено значение: {1}")
+    @Step("в поле \"{0}\" введено значение \"{1}\"")
     public void stepFillFields(String fieldName, String value) {
         new CalculatorPage().fillFields(fieldName, value);
     }
 
-    @Step("выставлен чекбокс \"{0}\"")
-    public void stepSetDiscount(String discountName) {
+    public void stepSaveDiscounts(String discountName) {
         Stash.getInstance().putDiscountName(discountName);
     }
 
-    @Step("сняты остальные чекбоксы")
-    public void stepDisableDiscounts() {
-        new CalculatorPage().disableDiscounts(Stash.getInstance().getDiscountNames());
+    @Step("выставлены чекбоксы")
+    public void stepSetDiscounts() {
+        new CalculatorPage().setDiscounts(Stash.getInstance().getDiscountNames());
     }
 }

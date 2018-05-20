@@ -1,6 +1,7 @@
 package Pages;
 
 import Steps.BaseSteps;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -17,9 +18,10 @@ public class MortgageOptionsPage extends BasePage {
      */
     public void goToCalculatorPage() {
         scrollToElement(calculateMortgageButton);
+
         try {
             clickWithNewPage(calculateMortgageButton);
-        } catch (Exception e) {
+        } catch (WebDriverException e) {
             BaseSteps.closePopup();
             clickWithNewPage(calculateMortgageButton);
         }

@@ -66,4 +66,8 @@ public class BaseSteps {
             driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
         }
     }
+
+    public static String getBaseUrl() {
+        return baseUrl;
+    }
 }

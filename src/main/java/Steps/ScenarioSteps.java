@@ -36,8 +36,8 @@ public class ScenarioSteps {
     @When("^выставлены заданные чекбоксы и отключены остальные$")
     public void setCheckboxes(DataTable parameters) {
         parameters.asList(String.class)
-                .forEach(discountName -> calculatorSteps.stepSetDiscount(discountName));
-        calculatorSteps.stepDisableDiscounts();
+                .forEach(discountName -> calculatorSteps.stepSaveDiscounts(discountName));
+        calculatorSteps.stepSetDiscounts();
     }
 
     @Then("^рассчитаны значения$")

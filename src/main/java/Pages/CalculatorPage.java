@@ -2,10 +2,10 @@ package Pages;
 
 import org.junit.Assert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 
 import java.util.List;
 
@@ -15,13 +15,13 @@ import java.util.List;
 public class CalculatorPage extends BasePage {
     // Путь к разделу калькулятора на странице
     static final String calculatorXpath = ".//div[@class = 'dcCalc_frame']";
+    //Пути к иконкам чекбокса
+    static final String discountIconOnXpath = ".//span[@class = 'dcCalc_switch__icon-on']";
+    static final String discountIconOffXpath = ".//span[@class = 'dcCalc_switch__icon-off']";
 
 
     @FindBy(xpath = ".//h1")
     WebElement title; // Заголовок страницы
-
-    @FindBy(xpath = calculatorXpath + "//div[contains(text(), 'Цель кредита')]")
-    WebElement purposeLabel;
 
     @FindBy(xpath = calculatorXpath +
             "//div[contains(text(), 'Цель кредита')]/following-sibling::div//input[@class = 'dcCalc_textfield__input']")
@@ -51,6 +51,7 @@ public class CalculatorPage extends BasePage {
     public String getTitle() {
         waitVisibility(title);
         scrollToElement(title);
+
         return title.getText();
     }
 
@@ -62,6 +63,7 @@ public class CalculatorPage extends BasePage {
     public void selectPurpose(String purposeName) {
         waitToBeClickable(purposeOptionsButton);
         scrollToElement(purposeOptionsButton);
+
         purposeOptionsButton.click();
 
         waitVisibility(purposeOptions.get(0));
@@ -75,7 +77,7 @@ public class CalculatorPage extends BasePage {
     }
 
     /**
-     * Метод заполняет поля калькулятора
+     * Метод заполняет поле калькулятора
      *
      * @param fieldName Поле для заполнения
      * @param value Значение
@@ -114,21 +116,51 @@ public class CalculatorPage extends BasePage {
     }
 
     /**
-     * Метод отключает чекбоксы, которые не должны быть включены
+     * Метод выставляет чекбоксы в зависимости от того, должны ли они быть включены
      *
-     * @param discountNames Названия чекбоксов, которые должны остаться включенными
+     * @param discountNames Названия чекбоксов, которые должны быть включенными
      */
-    public void disableDiscounts(List<String> discountNames) {
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            System.out.println("oops");
-        }
-
+    public void setDiscounts(List<String> discountNames) {
         for (WebElement discount : discounts) {
-            if (!discountNames.contains(getDiscountTitle(discount))) {
-                scrollToElement(discount);
+            scrollToElement(discount);
+
+            if (discountNames.contains(getDiscountTitle(discount)))
+                setDiscount(discount);
+            else
+                disableDiscount(discount);
+        }
+    }
+
+    /**
+     * Метод включает чекбокс
+     *
+     * @param discount Чекбокс
+     */
+    private void setDiscount(WebElement discount) {
+        if (discount.findElement(By.xpath(discountIconOffXpath)).isDisplayed()) {
+            discount.findElement(By.xpath(".//label")).click();
+            try {
+                waitVisibility(discount.findElement(By.xpath(discountIconOnXpath)));
+            } catch (TimeoutException e) {
                 discount.findElement(By.xpath(".//label")).click();
+                waitVisibility(discount.findElement(By.xpath(discountIconOnXpath)));
+            }
+        }
+    }
+
+    /**
+     * Метод выключает чекбокс
+     *
+     * @param discount Чекбокс
+     */
+    private void disableDiscount(WebElement discount) {
+        if (discount.findElement(By.xpath(discountIconOnXpath)).isDisplayed()) {
+            discount.findElement(By.xpath(".//label")).click();
+            try {
+                waitVisibility(discount.findElement(By.xpath(discountIconOffXpath)));
+            } catch (TimeoutException e) {
+                discount.findElement(By.xpath(".//label")).click();
+                waitVisibility(discount.findElement(By.xpath(discountIconOffXpath)));
             }
         }
     }
